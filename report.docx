@@ -1,0 +1,76 @@
+﻿Dependencies used for video object detection-
+
+1) sudo apt-get install build-essential
+
+2) Libraries: sudo apt-get install cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
+
+3) Python bindings and such: sudo apt-get install python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
+
+4) sudo apt-get install libopencv-dev
+
+
+Types of images we need to train - 
+
+ we need "positive" images, and "negative" images. The "positive" images are images that contain the object you want to find. This can either be images that just mainly have the object, or it can be images that contain the object.
+
+With these positives, we build a vector file that is basically all of these positives put together. One nice thing about the positives is that you can actually just have one image of the object you wish to detect, and then have a few thousand negative images. Yes, a few thousand. The negative images can be anything, except they cannot contain your object.
+
+Negative images taken from ImageNet.
+
+For detecting all watches it need 50,000 positive image and atleast 25000 negative image.
+
+Step used for video object detection and deploying code-
+
+1) Downloded negative image – image_download.py
+  	we need all image to be of same size for this we made a  quick script 	that will visit these URL lists, grab the links, visit the links, pull the 	images, resize them, save them
+   	Downloded around 2500 images.
+
+2) Clean the image folder as some useless image downloded - image_download.py
+   	delete all the ugly images.
+
+3) Make a descriptor file as bg.txt where all images path are present so that we can create samples through one image – descriptor.py
+
+4) As we are using only one positive file we have to Create samples trough one 	positive image we want to detect the number of images must be around 	negative number of images
+   unix command - opencv_createsamples -img watch5050.jpg -bg bg.txt -info info/info.lst -pngoutput info -maxxangle 0.5 -maxyangle 0.5 -maxzangle 0.5 -num 1950
+ a) positive image           b) After creating samples through downloded images 
+
+
+
+
+
+
+
+
+
+6) Create a folder as “positive” and save all your images there through command 
+   :$ opencv_createsamples -info info/info.lst – num 1950 -w 20 -h 20 -vec positive.vec
+
+   **we are using images of smaller size as larger file will take a long time to train.
+
+Train the model-
+
+1) opencv_traincascade -data data -vec positives.vec -bg bg.txt -numPos 1800 -numNeg 900 -numStages 10 -w 20 -h 20
+
+
+a) img 1 screenshot captured while training the model(stage 0).
+
+
+
+
+
+
+
+
+       
+
+
+
+
+
+
+
+
+b) img 1 screenshot captured while training the model(stage 4).
+
+
+
